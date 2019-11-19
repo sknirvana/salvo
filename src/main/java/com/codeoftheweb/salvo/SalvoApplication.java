@@ -1,13 +1,7 @@
 package com.codeoftheweb.salvo;
 
-import com.codeoftheweb.salvo.models.Game;
-import com.codeoftheweb.salvo.models.GamePlayer;
-import com.codeoftheweb.salvo.models.Player;
-import com.codeoftheweb.salvo.models.Ship;
-import com.codeoftheweb.salvo.repository.GamePlayerRepository;
-import com.codeoftheweb.salvo.repository.GameRepository;
-import com.codeoftheweb.salvo.repository.PlayerRepository;
-import com.codeoftheweb.salvo.repository.ShipRepository;
+import com.codeoftheweb.salvo.models.*;
+import com.codeoftheweb.salvo.repository.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
@@ -24,7 +18,7 @@ public class SalvoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner initData(PlayerRepository playerRepository , GamePlayerRepository gamePlayerRepository , GameRepository gameRepository , ShipRepository shipRepository) {
+	public CommandLineRunner initData(PlayerRepository playerRepository , GamePlayerRepository gamePlayerRepository , GameRepository gameRepository , ShipRepository shipRepository , SalvoRepository salvoRepository) {
 		return (args) -> {
 
 			//Instanciando y guardando jugadores
@@ -85,19 +79,16 @@ public class SalvoApplication {
 			shipLocation1.add("A2");
 			shipLocation1.add("A3");
 
-
 			List<String> shipLocation2 = new ArrayList<>();
 			shipLocation2.add("J4");
 			shipLocation2.add("J5");
 			shipLocation2.add("J6");
 			shipLocation2.add("J7");
 
-
 			List<String> shipLocation3 = new ArrayList<>();
 			shipLocation3.add("E8");
 			shipLocation3.add("E7");
 			shipLocation3.add("E6");
-
 
 			List<String> shipLocation4 =new ArrayList<>();
 			shipLocation4.add("C4");
@@ -105,22 +96,54 @@ public class SalvoApplication {
 			shipLocation4.add("E4");
 			shipLocation4.add("F4");
 
-
 			//Instanciando y guardando ship's
 			Ship ship1 = new Ship(shipLocation1,"submarino",gamePlayer1);
-			Ship ship2 = new Ship(shipLocation2,"destructor",gamePlayer1);
+			Ship ship2 = new Ship(shipLocation2,"destructor",gamePlayer2);
 			Ship ship3 = new Ship(shipLocation3,"barquito",gamePlayer1);
-			Ship ship4 = new Ship(shipLocation4, "carrie",gamePlayer1);
+			Ship ship4 = new Ship(shipLocation4, "carrie",gamePlayer2);
 
-			//declaro a que GamePlayer va a ir este ship
-			ship1.setGamePlayer(gamePlayer1);
+			//Declaro a que GamePlayer va a ir este ship
+
 			shipRepository.save(ship1);
-			ship2.setGamePlayer(gamePlayer1);
+
 			shipRepository.save(ship2);
-			ship3.setGamePlayer(gamePlayer1);
+
 			shipRepository.save(ship3);
-			ship4.setGamePlayer(gamePlayer1);
+
 			shipRepository.save(ship4);
+
+			//----------------------------------------------------------------------------------
+
+			List<String> location1 = new ArrayList<>();
+			location1.add("B5");
+			location1.add("C5");
+			location1.add("F1");
+
+			List<String> location2 = new ArrayList<>();
+			location2.add("F2");
+			location2.add("D5");
+
+			List<String> location3 = new ArrayList<>();
+			location3.add("A2");
+			location3.add("A4");
+			location3.add("G6");
+
+			List<String> location4 =new ArrayList<>();
+			location4.add("A3");
+			location4.add("H6");
+			
+
+			Salvo salvo1 = new Salvo(1, gamePlayer1 , location1);
+			salvoRepository.save(salvo1);
+			Salvo salvo2 = new Salvo(2 , gamePlayer2 , location2);
+			salvoRepository.save(salvo2);
+			Salvo salvo3 = new Salvo(3 , gamePlayer1 , location3);
+			salvoRepository.save(salvo3);
+			Salvo salvo4 = new Salvo(4 , gamePlayer2 , location4);
+			salvoRepository.save(salvo4);
+			Salvo salvo5 = new Salvo();
+			salvoRepository.save(salvo5);
+
 
 		};
 	}

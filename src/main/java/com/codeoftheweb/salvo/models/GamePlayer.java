@@ -34,21 +34,17 @@ public class GamePlayer {
     @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
     private Set<Ship> ships;
 
+    @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
+    private Set<Salvo> salvoes;
+
     public GamePlayer(){
         this.joinDate = new Date();
     }
-
 
     public GamePlayer (Player player , Game game){
         this.joinDate = new Date();
         this.player = player;
         this.game = game;
-    }
-
-    public GamePlayer(Player player, Game game , Date joinDate){
-        this.joinDate=joinDate;
-        this.player=player;
-        this.game=game;
     }
 
     @RequestMapping
@@ -100,5 +96,11 @@ public class GamePlayer {
         this.ships = ships;
     }
 
+    public Set<Salvo> getSalvoes() {
+        return salvoes;
+    }
 
+    public void setSalvoes(Set<Salvo> salvoes) {
+        this.salvoes = salvoes;
+    }
 }

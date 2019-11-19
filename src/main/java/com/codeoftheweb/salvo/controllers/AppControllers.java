@@ -46,15 +46,19 @@ public class AppControllers {
         dto.put("created", game.getCreationDate());
         dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers()
                 .stream()
-                .map(gamePlayer1 -> gamePlayer1.makeGamePlayerDTO()));
+                .map(_gamePlayer -> _gamePlayer.makeGamePlayerDTO()));
 
         dto.put("ships", gamePlayer.getShips()
                 .stream()
                 .map(ship -> ship.makeShipDTO())
                 .collect(Collectors.toList()));
+        dto.put("salvoes" , gamePlayer.getGame().getGamePlayers()
+                .stream()
+                .flatMap(_gamePlayer -> _gamePlayer.getSalvoes() .stream())
+                .map(salvo -> salvo.makeSalvoDTO())
+                .collect(Collectors.toList()));
 
         return dto;
-
     }
 
 

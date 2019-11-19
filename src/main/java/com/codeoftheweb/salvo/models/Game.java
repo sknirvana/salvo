@@ -4,10 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -34,8 +31,15 @@ public class Game {
                 .stream()
                 .map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
                 .collect(Collectors.toList()));
-
         return dto;
+    }
+
+    public List<Map<String , Object>> getAllSalvoesFromGamePlayer(){
+        return gamePlayers
+                .stream()
+                .flatMap(gamePlayer -> gamePlayer.getSalvoes().stream())
+                .map(salvo -> salvo.makeSalvoDTO())
+                .collect(Collectors.toList());
     }
 
     public Game(){

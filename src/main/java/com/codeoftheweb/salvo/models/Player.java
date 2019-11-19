@@ -21,11 +21,11 @@ public class Player {
      private Set <GamePlayer> gamePlayers;
 
 
-   public Player(){};
+    public Player(){};
 
-   public Player(String email){
-       this.email = email;
-   }
+    public Player(String email){
+        this.email = email;
+    }
 
     public long getId() {
         return id;

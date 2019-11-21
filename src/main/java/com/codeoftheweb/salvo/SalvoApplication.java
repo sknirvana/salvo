@@ -2,12 +2,16 @@ package com.codeoftheweb.salvo;
 
 import com.codeoftheweb.salvo.models.*;
 import com.codeoftheweb.salvo.repository.*;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.support.SimpleTriggerContext;
 
+import javax.xml.stream.Location;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SpringBootApplication
@@ -18,132 +22,221 @@ public class SalvoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner initData(PlayerRepository playerRepository , GamePlayerRepository gamePlayerRepository , GameRepository gameRepository , ShipRepository shipRepository , SalvoRepository salvoRepository) {
+	public CommandLineRunner initData(PlayerRepository playerRepository , GamePlayerRepository gamePlayerRepository , GameRepository gameRepository , ShipRepository shipRepository , SalvoRepository salvoRepository , ScoreRepository scoreRepository) {
 		return (args) -> {
 
 			//Instanciando y guardando jugadores
-			Player player1 = new Player("jugador-1@gmail.com");
-			playerRepository.save(player1);
 
-			Player player2 = new Player("jugador-2@gmail.com");
-			playerRepository.save(player2);
+			Player Jbauer = new Player("j.bauer@gmail.com");
+			Player Obrian = new Player("c.obrian@gmail.com");
+			Player Kbauer = new Player("k.bauer@gmail.com");
+			Player Almeida = new Player("t.almeida@gmail.com");
 
-			Player player3 = new Player("jugador-3@gmail.com");
-			playerRepository.save(player3);
-
-			Player player4 = new Player("jugador-4@gmail.com");
-			playerRepository.save(player4);
+			playerRepository.save(Jbauer);
+			playerRepository.save(Obrian);
+			playerRepository.save(Kbauer);
+			playerRepository.save(Almeida);
 
 
 			//-----------------------------------------------------------------------------------
 
 			//Instanciando y guardando juegos
 			Game game1 = new Game();
-			gameRepository.save(game1);
-
 			Game game2 = new Game();
-			gameRepository.save(game2);
-
 			Game game3 = new Game();
+			Game game4 = new Game();
+			Game game5 = new Game();
+			Game game6 = new Game();
+			Game game7 = new Game();
+			Game game8 = new Game();
+
+			gameRepository.save(game1);
+			gameRepository.save(game2);
 			gameRepository.save(game3);
+			gameRepository.save(game4);
+			gameRepository.save(game5);
+			gameRepository.save(game6);
+			gameRepository.save(game7);
+			gameRepository.save(game8);
 
 
 			//----------------------------------------------------------------------------------
 
 			//Instanciando y guardando partidas
 
-			//primer partida
-			GamePlayer gamePlayer1 = new GamePlayer(player1 , game1);
-			gamePlayerRepository.save(gamePlayer1);
-			GamePlayer gamePlayer2 = new GamePlayer(player2 , game1);
-			gamePlayerRepository.save(gamePlayer2);
+			List<GamePlayer> gameplayers = new ArrayList<>();
+			//contar cada add apartir de 0, para llamar (get."numero") al jugador que necesitemos
+			gameplayers.add(new GamePlayer(Jbauer, game1)); //0
+			gameplayers.add(new GamePlayer(Obrian , game1));//1
 
-			//segunda partida
-			GamePlayer gamePlayer3 = new GamePlayer(player3 , game2);
-			gamePlayerRepository.save(gamePlayer3);
-			GamePlayer gamePlayer4 = new GamePlayer(player4 , game2);
-			gamePlayerRepository.save(gamePlayer4);
+			gameplayers.add(new GamePlayer(Jbauer,game2));//2
+			gameplayers.add(new GamePlayer(Obrian, game2));//3
 
-			//tercera partida
-			GamePlayer gamePlayer5 = new GamePlayer(player2 , game3);
-			gamePlayerRepository.save(gamePlayer5);
-			GamePlayer gamePlayer6 = new GamePlayer(player4 , game3);
-			gamePlayerRepository.save(gamePlayer6);
+			gameplayers.add(new GamePlayer(Obrian , game3));//4
+			gameplayers.add(new GamePlayer(Almeida , game3));//5
+
+			gameplayers.add(new GamePlayer(Obrian, game4));//6
+			gameplayers.add(new GamePlayer(Jbauer, game4));//7
+
+
+			gameplayers.add(new GamePlayer(Almeida, game5));//8
+			gameplayers.add(new GamePlayer(Jbauer, game5));//9
+
+			gameplayers.add(new GamePlayer(Kbauer, game6));//10
+			gameplayers.add(new GamePlayer(Obrian, game6));//11
+
+			gameplayers.add(new GamePlayer(Almeida, game7));//12
+			gameplayers.add(new GamePlayer(Jbauer, game7));//13
+
+			gameplayers.add(new GamePlayer(Kbauer, game8));//14
+			gameplayers.add(new GamePlayer(Almeida, game8));//15
+
+			gamePlayerRepository.saveAll(gameplayers);
 
 
 			//----------------------------------------------------------------------------------
 
 			//Instanciando y guardando shipLocation's
-			List<String> shipLocation1 = new ArrayList<>();
-			shipLocation1.add("A1");
-			shipLocation1.add("A2");
-			shipLocation1.add("A3");
 
-			List<String> shipLocation2 = new ArrayList<>();
-			shipLocation2.add("J4");
-			shipLocation2.add("J5");
-			shipLocation2.add("J6");
-			shipLocation2.add("J7");
+			List<Ship> ships = new ArrayList<>();
 
-			List<String> shipLocation3 = new ArrayList<>();
-			shipLocation3.add("E8");
-			shipLocation3.add("E7");
-			shipLocation3.add("E6");
+			//Game 1
+			ships.add(new Ship(Arrays.asList("H2","H3","H4"),"Destroyer", gameplayers.get(0)));
+			ships.add(new Ship(Arrays.asList("E1","F1","G1"),"Submarine", gameplayers.get(0)));
+			ships.add(new Ship(Arrays.asList("B4","B5"),"Patrol Boat", gameplayers.get(0)));
+			ships.add(new Ship(Arrays.asList("B5","C5","D5"),"Destroyer", gameplayers.get(1)));
+			ships.add(new Ship(Arrays.asList("F1","F2"),"Patrol Boat", gameplayers.get(1)));
 
-			List<String> shipLocation4 =new ArrayList<>();
-			shipLocation4.add("C4");
-			shipLocation4.add("D4");
-			shipLocation4.add("E4");
-			shipLocation4.add("F4");
+			//Game 2
+			ships.add(new Ship(Arrays.asList("B5","C5","D5"),"Destroyer", gameplayers.get(2)));
+			ships.add(new Ship(Arrays.asList("C6","C7"),"Patrol Boat", gameplayers.get(2)));
+			ships.add(new Ship(Arrays.asList("A2","A3","A4"),"Subrmarine", gameplayers.get(3)));
+			ships.add(new Ship(Arrays.asList("G6","H6"),"Patrol Boat", gameplayers.get(3)));
 
-			//Instanciando y guardando ship's
-			Ship ship1 = new Ship(shipLocation1,"submarino",gamePlayer1);
-			Ship ship2 = new Ship(shipLocation2,"destructor",gamePlayer2);
-			Ship ship3 = new Ship(shipLocation3,"barquito",gamePlayer1);
-			Ship ship4 = new Ship(shipLocation4, "carrie",gamePlayer2);
+			//Game 3
+			ships.add(new Ship(Arrays.asList("B5","C5","D5"),"Destroyer", gameplayers.get(4)));
+			ships.add(new Ship(Arrays.asList("C6","C7"),"Patrol Boat", gameplayers.get(4)));
+			ships.add(new Ship(Arrays.asList("A2","A3","A4"),"Subrmarine", gameplayers.get(5)));
+			ships.add(new Ship(Arrays.asList("G6","H6"),"Patrol Boat", gameplayers.get(5)));
 
-			//Declaro a que GamePlayer va a ir este ship
+			//Game 4
+			ships.add(new Ship(Arrays.asList("B5","C5","D5"),"Destroyer", gameplayers.get(6)));
+			ships.add(new Ship(Arrays.asList("C6","C7"),"Patrol Boat", gameplayers.get(6)));
+			ships.add(new Ship(Arrays.asList("A2","A3","A4"),"Subrmarine", gameplayers.get(7)));
+			ships.add(new Ship(Arrays.asList("G6","H6"),"Patrol Boat", gameplayers.get(7)));
 
-			shipRepository.save(ship1);
+			//Game 5
+			ships.add(new Ship(Arrays.asList("B5","C5","D5"),"Destroyer", gameplayers.get(8)));
+			ships.add(new Ship(Arrays.asList("C6","C7"),"Patrol Boat", gameplayers.get(8)));
+			ships.add(new Ship(Arrays.asList("A2","A3","A4"),"Subrmarine", gameplayers.get(9)));
+			ships.add(new Ship(Arrays.asList("G6","H6"),"Patrol Boat", gameplayers.get(9)));
 
-			shipRepository.save(ship2);
+			//Game 6
+			ships.add(new Ship(Arrays.asList("B5","C5","D5"),"Destroyer", gameplayers.get(10)));
+			ships.add(new Ship(Arrays.asList("C6","C7"),"Patrol Boat", gameplayers.get(10)));
+			ships.add(new Ship(Arrays.asList("A2","A3","A4"),"Subrmarine", gameplayers.get(11)));
+			ships.add(new Ship(Arrays.asList("G6","H6"),"Patrol Boat", gameplayers.get(11)));
 
-			shipRepository.save(ship3);
+			//Game 7
+			ships.add(new Ship(Arrays.asList("B5","C5","D5"),"Destroyer", gameplayers.get(12)));
+			ships.add(new Ship(Arrays.asList("C6","C7"),"Patrol Boat", gameplayers.get(12)));
+			ships.add(new Ship(Arrays.asList("A2","A3","A4"),"Subrmarine", gameplayers.get(13)));
+			ships.add(new Ship(Arrays.asList("G6","H6"),"Patrol Boat", gameplayers.get(13)));
 
-			shipRepository.save(ship4);
+			//Game 8
+			ships.add(new Ship(Arrays.asList("B5","C5","D5"),"Destroyer", gameplayers.get(14)));
+			ships.add(new Ship(Arrays.asList("C6","C7"),"Patrol Boat", gameplayers.get(14)));
+			ships.add(new Ship(Arrays.asList("A2","A3","A4"),"Subrmarine", gameplayers.get(15)));
+			ships.add(new Ship(Arrays.asList("G6","H6"),"Patrol Boat", gameplayers.get(15)));
+
+			shipRepository.saveAll(ships);
+
 
 			//----------------------------------------------------------------------------------
 
-			List<String> location1 = new ArrayList<>();
-			location1.add("B5");
-			location1.add("C5");
-			location1.add("F1");
+			//Instanciando y guardando salvo location's
 
-			List<String> location2 = new ArrayList<>();
-			location2.add("F2");
-			location2.add("D5");
+			List<Salvo> salvo_loc = new ArrayList<>();
 
-			List<String> location3 = new ArrayList<>();
-			location3.add("A2");
-			location3.add("A4");
-			location3.add("G6");
+			//Turnos, game 1
+			salvo_loc.add(new Salvo(Arrays.asList("B5","C5","F1"), gameplayers.get(0), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("B4","B5","B6"), gameplayers.get(1), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("F2","D5"), gameplayers.get(0), 2));
+			salvo_loc.add(new Salvo(Arrays.asList("E1","H3","A2"), gameplayers.get(1), 2));
 
-			List<String> location4 =new ArrayList<>();
-			location4.add("A3");
-			location4.add("H6");
-			
+			//Turnos, game 2
+			salvo_loc.add(new Salvo(Arrays.asList("A2","A4","G6"), gameplayers.get(2), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("B5","D5","C7"), gameplayers.get(3), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("A3","H6"), gameplayers.get(2), 2));
+			salvo_loc.add(new Salvo(Arrays.asList("C5","C6"), gameplayers.get(3), 2));
 
-			Salvo salvo1 = new Salvo(1, gamePlayer1 , location1);
-			salvoRepository.save(salvo1);
-			Salvo salvo2 = new Salvo(2 , gamePlayer2 , location2);
-			salvoRepository.save(salvo2);
-			Salvo salvo3 = new Salvo(3 , gamePlayer1 , location3);
-			salvoRepository.save(salvo3);
-			Salvo salvo4 = new Salvo(4 , gamePlayer2 , location4);
-			salvoRepository.save(salvo4);
-			Salvo salvo5 = new Salvo();
-			salvoRepository.save(salvo5);
+			//Turnos, game 3
+			salvo_loc.add(new Salvo(Arrays.asList("A2","A4","G6"), gameplayers.get(4), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("B5","D5","C7"), gameplayers.get(5), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("A3","H6"), gameplayers.get(4), 2));
+			salvo_loc.add(new Salvo(Arrays.asList("C5","C6"), gameplayers.get(5), 2));
 
+			//Turnos, game 4
+			salvo_loc.add(new Salvo(Arrays.asList("A2","A4","G6"), gameplayers.get(6), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("B5","D5","C7"), gameplayers.get(7), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("A3","H6"), gameplayers.get(6), 2));
+			salvo_loc.add(new Salvo(Arrays.asList("C5","C6"), gameplayers.get(7), 2));
+			//Turnos, game 5
+			salvo_loc.add(new Salvo(Arrays.asList("A2","A4","G6"), gameplayers.get(8), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("B5","D5","C7"), gameplayers.get(9), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("A3","H6"), gameplayers.get(4), 2));
+			salvo_loc.add(new Salvo(Arrays.asList("C5","C6"), gameplayers.get(9), 2));
+			//Turnos, game 6
+			salvo_loc.add(new Salvo(Arrays.asList("A2","A4","G6"), gameplayers.get(10), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("B5","D5","C7"), gameplayers.get(11), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("A3","H6"), gameplayers.get(10), 2));
+			salvo_loc.add(new Salvo(Arrays.asList("C5","C6"), gameplayers.get(11), 2));
+			//Turnos, game 7
+			salvo_loc.add(new Salvo(Arrays.asList("A2","A4","G6"), gameplayers.get(12), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("B5","D5","C7"), gameplayers.get(13), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("A3","H6"), gameplayers.get(12), 2));
+			salvo_loc.add(new Salvo(Arrays.asList("C5","C6"), gameplayers.get(13), 2));
+			//Turnos, game 8
+			salvo_loc.add(new Salvo(Arrays.asList("A2","A4","G6"), gameplayers.get(14), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("B5","D5","C7"), gameplayers.get(15), 1));
+			salvo_loc.add(new Salvo(Arrays.asList("A3","H6"), gameplayers.get(14), 2));
+			salvo_loc.add(new Salvo(Arrays.asList("C5","C6"), gameplayers.get(15), 2));
+
+			salvoRepository.saveAll(salvo_loc);
+
+
+			//----------------------------------------------------------------------------------
+
+			//instanciando y guardando score's
+
+			List<Score> scoreList = new ArrayList<>();
+
+			//Game 1
+			 scoreList.add(new Score(1,game1,Jbauer));
+			 scoreList.add(new Score(0,game1,Obrian));
+			 //Game 2
+			 scoreList.add(new Score(0.5,game2,Jbauer));
+			 scoreList.add(new Score(0.5,game2,Obrian));
+			 //Game 3
+			scoreList.add(new Score(0,game3,Obrian));
+			scoreList.add(new Score(1,game3,Almeida));
+			//Game 4
+			scoreList.add(new Score(0.5,game4,Obrian));
+			scoreList.add(new Score(0.5,game4,Jbauer));
+			//Game 5
+			scoreList.add(new Score(1,game5,Almeida));
+			scoreList.add(new Score(0,game5,Jbauer));
+			//Game 6
+			scoreList.add(new Score(0.5,game6,Kbauer));
+			scoreList.add(new Score(0.5,game6,Obrian));
+			//Game 7
+			scoreList.add(new Score(0,game7,Almeida));
+			scoreList.add(new Score(1,game7,Jbauer));
+			//Game 8
+			scoreList.add(new Score(0.5,game8,Kbauer));
+			scoreList.add(new Score(0.5,game8,Almeida));
+
+			scoreRepository.saveAll(scoreList);
 
 		};
 	}

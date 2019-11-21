@@ -54,7 +54,12 @@ public class GamePlayer {
         dto.put("player", this.getPlayer().makePlayerDTO());
 
         return dto;
-    };
+    }
+
+    public Score getScore(){
+        Score score = this.player.getScore(this.game.getId());
+        return score;
+    }
 
     public long getId() {
         return id;
@@ -103,4 +108,6 @@ public class GamePlayer {
     public void setSalvoes(Set<Salvo> salvoes) {
         this.salvoes = salvoes;
     }
+
+
 }

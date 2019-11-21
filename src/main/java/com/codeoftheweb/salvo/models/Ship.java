@@ -20,12 +20,6 @@ public class Ship {
 
     public Ship(String shipType){}
 
-    public Ship(List<String> shipLocation ,String  shipType,  GamePlayer gamePlayer){
-        this.gamePlayer = gamePlayer;
-        this.shipType = shipType;
-        this.shipLocations = shipLocation;
-    }
-
     @ElementCollection
     @Column(name="location")
     private List<String> shipLocations = new ArrayList<>();
@@ -34,6 +28,11 @@ public class Ship {
     @JoinColumn(name="gamePlayer_id")
     private GamePlayer gamePlayer;
 
+    public Ship(List<String> shipLocation ,String  shipType,  GamePlayer gamePlayer){
+        this.gamePlayer = gamePlayer;
+        this.shipType = shipType;
+        this.shipLocations = shipLocation;
+    }
 
     public long getId() {
         return id;

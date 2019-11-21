@@ -27,10 +27,10 @@ public class Salvo {
 
     public Salvo(){}
 
-    public Salvo(int turn , GamePlayer gamePlayer , List<String> location){
-        this.turn = turn;
-        this.gamePlayer = gamePlayer;
+    public Salvo( List<String> location , GamePlayer gamePlayer , int turn ){
         this.location = location;
+        this.gamePlayer = gamePlayer;
+        this.turn = turn;
     }
 
     public Map<String,Object> makeSalvoDTO(){

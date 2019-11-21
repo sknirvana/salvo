@@ -2,16 +2,15 @@ package com.codeoftheweb.salvo;
 
 import com.codeoftheweb.salvo.models.*;
 import com.codeoftheweb.salvo.repository.*;
-import org.springframework.beans.factory.ListableBeanFactory;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.support.SimpleTriggerContext;
 
-import javax.xml.stream.Location;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootApplication
@@ -58,6 +57,15 @@ public class SalvoApplication {
 			gameRepository.save(game6);
 			gameRepository.save(game7);
 			gameRepository.save(game8);
+
+			// Diferencia Horaria
+			game2.setCreationDate(Date.from(game1.getCreationDate().toInstant().plusSeconds(3600)));
+			game3.setCreationDate(Date.from(game2.getCreationDate().toInstant().plusSeconds(3600)));
+			game4.setCreationDate(Date.from(game3.getCreationDate().toInstant().plusSeconds(3600)));
+			game5.setCreationDate(Date.from(game4.getCreationDate().toInstant().plusSeconds(3600)));
+			game6.setCreationDate(Date.from(game5.getCreationDate().toInstant().plusSeconds(3600)));
+			game7.setCreationDate(Date.from(game6.getCreationDate().toInstant().plusSeconds(3600)));
+			game8.setCreationDate(Date.from(game7.getCreationDate().toInstant().plusSeconds(3600)));
 
 
 			//----------------------------------------------------------------------------------

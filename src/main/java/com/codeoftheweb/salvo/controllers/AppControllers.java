@@ -40,7 +40,7 @@ public class AppControllers {
         public Map<String,Object> getGameAll(Authentication authentication){
         Map<String, Object> dto =new LinkedHashMap<>();
         if (isGuest(authentication)){
-            dto.put("player" , "guest");
+            dto.put("player" , "Guest");
         }
         else {
             Player playerAutenticado = playerRepository.findByEmail((authentication.getName()));
@@ -84,17 +84,17 @@ public class AppControllers {
     }
 
     @RequestMapping(path = "/players", method = RequestMethod.POST)
-    public ResponseEntity<Object> register (@RequestParam String username, @RequestParam String password){
+    public ResponseEntity<Object> register (@RequestParam String email, @RequestParam String password){
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty()) {
             return new ResponseEntity<>("Faltan datos", HttpStatus.FORBIDDEN);
         }
 
-        if (playerRepository.findByEmail(username) !=  null) {
+        if (playerRepository.findByEmail(email) !=  null) {
             return new ResponseEntity<>("El nombre esta en uso", HttpStatus.FORBIDDEN);
         }
 
-        playerRepository.save(new Player(username, passwordEncoder.encode(password)));
+        playerRepository.save(new Player(email, passwordEncoder.encode(password)));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

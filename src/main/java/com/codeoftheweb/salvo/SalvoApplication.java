@@ -323,8 +323,8 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/rest").denyAll()
 				.anyRequest().denyAll();
 		http.formLogin()
-				.usernameParameter("username")
-				.passwordParameter("password")
+				.usernameParameter("name")
+				.passwordParameter("pwd")
 				.loginPage("/api/login");
 
 		http.logout().logoutUrl("/api/logout");
@@ -343,7 +343,6 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// if logout is successful, just send a success response
 		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
-
 	}
 
 		private void clearAuthenticationAttributes(HttpServletRequest request) {

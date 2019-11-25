@@ -3,6 +3,7 @@ package com.codeoftheweb.salvo.models;
 import org.hibernate.annotations.GenericGenerator;
 
 
+
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,25 +31,25 @@ public class Game {
 
         dto.put("id" , this.getId());
         dto.put("created", this.getCreationDate());
-        dto.put("gamePlayers", this.getGamePlayers()
-                .stream()
-                .map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
-                .collect(Collectors.toList()));
-        dto.put("scores" , this.getScores()
-                .stream()
-                .map(score -> score.makeScoreDTO())
-                .collect(Collectors.toList()));
+        dto.put("gamePlayers", this.getGamePlayersList());
+        dto.put("scores" , this.getScoresList());
         return dto;
     }
 
-    public List<Map<String , Object>> getAllSalvoesFromGamePlayer(){
-        return gamePlayers
+    public List<Map<String,Object>> getGamePlayersList(){
+        return this.getGamePlayers()
                 .stream()
-                .flatMap(gamePlayer -> gamePlayer.getSalvoes().stream())
-                .map(salvo -> salvo.makeSalvoDTO())
+                .map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
                 .collect(Collectors.toList());
     }
 
+    public List<Map<String, Object>> getScoresList(){
+        return this.getScores()
+                .stream()
+                .map(score -> score.makeScoreDTO())
+                .collect(Collectors.toList());
+
+    }
 
     public Game(){
         this.creationDate= new Date();

@@ -1,7 +1,7 @@
 package com.codeoftheweb.salvo.models;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.web.bind.annotation.RequestMapping;
+
 
 import javax.persistence.*;
 import java.util.LinkedHashMap;
@@ -17,17 +17,34 @@ public class Player {
 
      private String email;
 
+     private String password;
+
     @OneToMany(mappedBy="player", fetch=FetchType.EAGER)
      private Set <GamePlayer> gamePlayers;
 
     @OneToMany(mappedBy="player", fetch=FetchType.EAGER)
     private Set<Score> scores;
 
+    public Map<String,Object> makePlayerDTO() {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("id", this.getId());
+        dto.put("email", this.getEmail());
+        return dto;
+    }
+
+    public Score getScore(long gameId) {
+        Score score = scores.stream()
+                .filter(_score -> _score.getGame().getId() == gameId)
+                .findFirst()
+                .orElse(null);
+        return score;
+    }
 
     public Player(){};
 
-    public Player(String email){
+    public Player(String email , String password){
         this.email = email;
+        this.password = password;
     }
 
     public long getId() {
@@ -62,20 +79,11 @@ public class Player {
         this.scores = scores;
     }
 
-    public Map<String,Object> makePlayerDTO() {
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id", this.getId());
-        dto.put("email", this.getEmail());
-        return dto;
+    public String getPassword() {
+        return password;
     }
 
-    public Score getScore(long gameId) {
-        Score score = scores.stream()
-                .filter(_score -> _score.getGame().getId() == gameId)
-                .findFirst()
-                .orElse(null);
-        return score;
-    }
+
 }
 
 

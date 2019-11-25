@@ -3,15 +3,19 @@ package com.codeoftheweb.salvo.controllers;
 
 import com.codeoftheweb.salvo.models.Game;
 import com.codeoftheweb.salvo.models.GamePlayer;
+import com.codeoftheweb.salvo.models.Player;
 import com.codeoftheweb.salvo.repository.GamePlayerRepository;
 import com.codeoftheweb.salvo.repository.GameRepository;
+import com.codeoftheweb.salvo.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -20,17 +24,35 @@ import java.util.stream.Collectors;
 public class AppControllers {
 
     @Autowired
-    private GameRepository gameRepository;
+    GameRepository gameRepository;
 
     @Autowired
-    private GamePlayerRepository gamePlayerRepository;
+    GamePlayerRepository gamePlayerRepository;
+
+    @Autowired
+    PlayerRepository playerRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
 
     @RequestMapping("/games")
-        public List<Object> getGameAll(){
-         return gameRepository.findAll()
+        public Map<String,Object> getGameAll(Authentication authentication){
+        Map<String, Object> dto =new LinkedHashMap<>();
+        if (isGuest(authentication)){
+            dto.put("player" , "guest");
+        }
+        else {
+            Player playerAutenticado = playerRepository.findByEmail((authentication.getName()));
+            dto.put("player", playerAutenticado.makePlayerDTO());
+        }
+
+         dto.put("games", gameRepository.findAll()
                 .stream()
                 .map(game -> game.makeGameDTO())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+
+        return dto;
         }
 
     @RequestMapping("/game_view/{nn}")
@@ -61,5 +83,23 @@ public class AppControllers {
         return dto;
     }
 
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<Object> register (@RequestParam String username, @RequestParam String password){
+
+        if (username.isEmpty() || password.isEmpty()) {
+            return new ResponseEntity<>("Faltan datos", HttpStatus.FORBIDDEN);
+        }
+
+        if (playerRepository.findByEmail(username) !=  null) {
+            return new ResponseEntity<>("El nombre esta en uso", HttpStatus.FORBIDDEN);
+        }
+
+        playerRepository.save(new Player(username, passwordEncoder.encode(password)));
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    private boolean isGuest(Authentication authentication) {
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+    }
 
 }

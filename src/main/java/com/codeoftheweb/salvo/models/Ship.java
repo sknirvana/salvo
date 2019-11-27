@@ -14,11 +14,11 @@ public class Ship {
     @GenericGenerator(name = "native" , strategy = "native")
     private long id;
 
-    private String shipType;
+    private String type;
 
     public Ship(){}
 
-    public Ship(String shipType){}
+    public Ship(String type){}
 
     @ElementCollection
     @Column(name="location")
@@ -28,9 +28,9 @@ public class Ship {
     @JoinColumn(name="gamePlayer_id")
     private GamePlayer gamePlayer;
 
-    public Ship(List<String> shipLocation ,String  shipType,  GamePlayer gamePlayer){
+    public Ship(List<String> shipLocation , String type, GamePlayer gamePlayer){
         this.gamePlayer = gamePlayer;
-        this.shipType = shipType;
+        this.type = type;
         this.shipLocations = shipLocation;
     }
 
@@ -42,19 +42,19 @@ public class Ship {
         this.id = id;
     }
 
-    public String getShipType() {
-        return shipType;
+    public String getType() {
+        return type;
     }
 
-    public void setShipType(String shipType) {
-        this.shipType = shipType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public List<String> getShipLocation() {
+    public List<String> getShipLocations() {
         return shipLocations;
     }
 
-    public void setShipLocation(List<String> shipLocation) {
+    public void setShipLocations(List<String> shipLocation) {
         this.shipLocations = shipLocation;
     }
 
@@ -69,7 +69,7 @@ public class Ship {
 
     public Map<String,Object> makeShipDTO() {
         Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("type", this.shipType);
+        dto.put("type", this.type);
         dto.put("locations", this.shipLocations);
 
         return dto;

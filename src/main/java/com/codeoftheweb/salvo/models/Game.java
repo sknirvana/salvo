@@ -31,6 +31,7 @@ public class Game {
 
         dto.put("id" , this.getId());
         dto.put("created", this.getCreationDate());
+        //dto.put("gameState" , this.)
         dto.put("gamePlayers", this.getGamePlayersList());
         dto.put("scores" , this.getScoresList());
         return dto;

@@ -34,6 +34,14 @@ public class Ship {
         this.shipLocations = shipLocation;
     }
 
+    public Map<String,Object> makeShipDTO() {
+        Map<String, Object> dtoShips = new LinkedHashMap<>();
+        dtoShips.put("type", this.type);//Tipos de barcos
+        dtoShips.put("locations", this.shipLocations);//Ubicaciones
+
+        return dtoShips;
+    }
+
     public long getId() {
         return id;
     }
@@ -64,15 +72,6 @@ public class Ship {
 
     public void setGamePlayer(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
-    }
-
-
-    public Map<String,Object> makeShipDTO() {
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("type", this.type);
-        dto.put("locations", this.shipLocations);
-
-        return dto;
     }
 
 }

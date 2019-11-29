@@ -45,10 +45,10 @@ public class GamePlayer {
         this.game = game;
     }
 
-    @RequestMapping
+    @RequestMapping// --> Mètodo que devuelve a un Jugador y su Id
     public Map<String,Object> makeGamePlayerDTO(){
         Map<String, Object> dto= new LinkedHashMap<>();
-        dto.put("id", this.getId());
+        dto.put("id", this.getId());// El metodo put quedan directamente asociados a la K y la V del Map
         dto.put("player", this.getPlayer().makePlayerDTO());
 
         return dto;

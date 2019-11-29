@@ -39,7 +39,8 @@ public class SalvoApplication extends SpringBootServletInitializer {
 		SpringApplication.run(SalvoApplication.class, args);
 	}
 
-	@Bean
+	@Bean //Interfaz encargada de encriptar las contraseñas antes de guardarlas
+	//Con @Bean conectamos automaticamente el codificador a cualquier clase que lo necesite
 	public PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
@@ -280,48 +281,49 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 }
 
-	//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 
-// Codigo de autenticacion
+
+//Esta clase esta en el paquete pero no es de acceso publico. Con @Configuration, spring las encuentra
+//Con esta clase toma el nombre de quien ha iniciado sesion, busca en la BD y devuelve un objeto UserDetails
+//con su ID, PASSWORD Y ROLE, si es necesario
 @Configuration
 class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
-	@Autowired
+	@Autowired//Se lo inyecta a la interface, y le aplica a esta subclase. El usuario necesita loguearse si existe.
 	PlayerRepository playerRepository;
 
-	//------------------------------------------------------------------------------------------------
-
 	//Autenticacion y Roles
-	@Override
+	@Override// Aca le decimos a Spring que use la base de datos (la que se creo en PlayerRepository) para la autenticacion
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(inputName -> {
-			Player player = playerRepository.findByEmail(inputName);
-			if (player != null) {
+		auth.userDetailsService(inputName -> {//inputName es el que se encarga de
+			Player player = playerRepository.findByEmail(inputName);// buscar en la BD creada en PlayerRepository, al usuario por su nombre
+			if (player != null) {//Si es diferente de null, devuelve como resultado al usuario registrado
 				return new User(player.getEmail(), player.getPassword(),
-						AuthorityUtils.createAuthorityList("USER"));
+						AuthorityUtils.createAuthorityList("USER"));// Este maneja la autoridad de los roles que tengamos
 			} else {
 				throw new UsernameNotFoundException("Usuario desconocido: " + inputName);
 			}
-		});
+		}); //Todo esto es el parametro de inputName
 	}
 }
-	//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 @EnableWebSecurity
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Override
+	@Override//--->  Método que define qué rutas URL deben protegerse y cuáles no
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
+		http.authorizeRequests()// Solicitudes que se leen en orden
 				.antMatchers("/web/**").permitAll()
-				.antMatchers("/api/game_view/**").hasAuthority("USER")
+				.antMatchers("/api/game_view/**").hasAuthority("USER")// Permitida a los que tengan rol de usuario
 				.antMatchers("/api/**").permitAll()
-				.antMatchers("/rest").denyAll()
+				.antMatchers("/rest").denyAll()// Niega cualquier acceso
 				.anyRequest().denyAll();
-		http.formLogin()
+		http.formLogin()// Este formulario es quien requiere autenticacion para acceder, emite autmaticamente un GET para la URL /login
 				.usernameParameter("name")
 				.passwordParameter("pwd")
-				.loginPage("/api/login");
+				.loginPage("/api/login");// genera un formulario HTML para el usuario
 
 		http.logout().logoutUrl("/api/logout");
 

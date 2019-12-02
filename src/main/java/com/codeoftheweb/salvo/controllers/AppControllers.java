@@ -94,8 +94,8 @@ public class AppControllers {
         Map<String, Object> dto = new LinkedHashMap<>();
         Map<String, Object> hits = new LinkedHashMap<>();
 
-        hits.put("self" , new ArrayList<>());
-        hits.put("opponent" , new ArrayList<>());
+        hits.put("self" , this.getHits(gamePlayer , gamePlayer.getOpponent()));
+        hits.put("opponent" , this.getHits(gamePlayer.getOpponent() , gamePlayer));
 
         dto.put("id", game.getId());
         dto.put("created", game.getCreationDate());
@@ -122,6 +122,12 @@ public class AppControllers {
 
     private boolean isGuest(Authentication authentication) { // Mètodo para autenticar a un visitante
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+    }
+
+    private List<Map<String,Object>> getHits (GamePlayer gamePlayerSelf , GamePlayer gamePlayerOpponent){
+        //hacer dto para hits , con las locations de los salvos
+        List<Map<String,Object>> hits = new ArrayList<>();
+        return hits;
     }
 
 

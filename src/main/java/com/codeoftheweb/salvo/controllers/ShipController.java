@@ -48,7 +48,7 @@ public class ShipController {
         // Obtener la partida y se lo asigna a la variable temporal creada en este mètodo
         GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).get();
 
-        // Partida sin identificacion - Se busca su id, y si no esta almanecenada se toma como null y se rechaza la solicitud
+        // Partida sin identificacion - Se busca su id, y si no esta almanecenada se toma como null. Se rechaza la solicitud
         if (gamePlayerRepository.findById(gamePlayerId).get() == null){
             return new ResponseEntity<>(makeMap("error" , "May need your Id - Necesita su identificacion") , HttpStatus.UNAUTHORIZED);}
 

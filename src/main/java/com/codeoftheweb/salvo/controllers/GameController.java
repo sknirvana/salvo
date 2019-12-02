@@ -54,6 +54,7 @@ public class GameController {
         return new ResponseEntity<>(makeMap("gpid", gamePlayer.getId()) , HttpStatus.CREATED);
 
     }
+
     @RequestMapping ("/games")//Mètodo que muestra los juegos actuales
     public Map<String,Object> getGameAll(Authentication authentication){
         Map<String, Object> dto =new LinkedHashMap<>();

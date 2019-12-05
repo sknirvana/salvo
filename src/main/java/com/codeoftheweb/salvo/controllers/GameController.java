@@ -66,7 +66,7 @@ public class GameController {
         }
         dto.put("games", gameRepository.findAll()
                 .stream()
-                .map(game -> game.makeGameDTO())
+                .map(Game::makeGameDTO)
                 .collect(Collectors.toList()));
 
         return dto;

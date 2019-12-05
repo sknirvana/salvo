@@ -21,17 +21,21 @@ public class GamePlayer {
     private Date joinDate;
 
 
+    //Muchos partidas a un solo player
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="player_id")
     private Player player;
 
+    //Muchos juegos  a un solo player
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="game_id")
     private Game game;
 
+    //En este caso solo le pertenece un solo gameplayer a ships
     @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
     private Set<Ship> ships;
 
+    //un solo gameplayer a salvos
     @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
     private Set<Salvo> salvoes;
 
@@ -45,7 +49,7 @@ public class GamePlayer {
         this.game = game;
     }
 
-    @RequestMapping// --> Mètodo que devuelve a un Jugador y su Id
+    @RequestMapping// --> Mètodo que devuelve a un player y su Id
     public Map<String,Object> makeGamePlayerDTO(){
         Map<String, Object> dto= new LinkedHashMap<>();
         dto.put("id", this.getId());// El metodo put quedan directamente asociados a la K y la V del Map
@@ -54,16 +58,23 @@ public class GamePlayer {
         return dto;
     }
 
+
+    // Devuelve la partida del oponente
     public GamePlayer getOpponent(){
         return this.getGame().getGamePlayers()
                 .stream()
                 .filter(gamePlayer -> gamePlayer.getId() != this.getId())
-                .findFirst().orElse(new GamePlayer());
+                .findFirst().orElse(null);
     }
 
     public Score getScore(){
-        Score score = this.player.getScore(this.game.getId());
-        return score;
+        return this.player.getScore(this.game.getId());
+    }
+
+
+    //Recibe el pedido de un tipo de ship, y lo devuelve
+    public Ship getShipPerType(String type){
+        return ships.stream().filter(ship -> ship.getType().equals(type)).findFirst().get();
     }
 
     public long getId() {

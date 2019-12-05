@@ -10,10 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -33,6 +30,70 @@ public class AppControllers {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+
+    @RequestMapping("/game_view/{gpid}")
+    public ResponseEntity<Map<String,Object>> getGames_view(@PathVariable Long gpid , Authentication authentication){
+
+        Map<String, Object> error = new LinkedHashMap<>();
+
+        if (isGuest(authentication)){
+            error.put("error", "Necesita Loguearse");
+            return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+        }
+        // Jugador autenticado, obtenemos el nombre por playerRepository
+        Player playerLogued = playerRepository.findByEmail(authentication.getName());
+
+        // Asigno al gameplayer(partida actual) en la variable gpid
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gpid).orElse(null);
+
+        //obtengo el game
+        Game game = gamePlayer.getGame();
+
+        if (playerLogued == authentication){
+            error.put("error", "Rejected request - Solicitud rechazada");
+            return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);}
+
+        if (gamePlayer == authentication){
+            error.put("error", "Rejected request - Solicitud rechazada");
+            return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);}
+
+        if (gamePlayer.getPlayer().getId() != playerLogued.getId()){
+            error.put("error", "Check your steps again - Revise sus pasos nuevamente");
+            return new ResponseEntity<>(error, HttpStatus.CONFLICT);}
+
+        Map<String, Object> dto = new LinkedHashMap<>();
+        Map<String, Object> hits = new LinkedHashMap<>();
+
+        if (Objects.isNull(gamePlayer.getOpponent())){
+            hits.put("self", new LinkedList<>());
+            hits.put("opponent" , new LinkedList<>());
+        }
+        else{
+            hits.put("self" , this.getHits(gamePlayer));
+            hits.put("opponent" , this.getHits(gamePlayer.getOpponent()));
+        }
+
+        dto.put("id", game.getId());
+        dto.put("created", game.getCreationDate());
+        dto.put("gameState" , getState(gamePlayer, gamePlayer.getOpponent()));
+        dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers()
+                .stream()
+                .map(GamePlayer::makeGamePlayerDTO)); // .map(_gamePlayer -> _gamePlayer.makeGamePlayerDTO()) esto es lo mismo
+        dto.put("ships", gamePlayer.getShips()
+                .stream()
+                .map(Ship::makeShipDTO)// .map(ship -> ship.makeShipDTO())
+                .collect(Collectors.toList()));
+        dto.put("salvoes" , gamePlayer.getGame().getGamePlayers()
+                .stream()
+                .flatMap(_gamePlayer -> _gamePlayer.getSalvoes() .stream())
+                .map(Salvo::makeSalvoDTO)// .map(salvo -> salvo.makeSalvoDTO())
+                .collect(Collectors.toList()));
+        dto.put("hits" , hits);
+
+        return (new ResponseEntity<>(dto, HttpStatus.OK));
+    }
+
+    //----------------------------------------------------------------------------------------------------------
 
     @RequestMapping(path = "/game/{gameId}/players" , method = RequestMethod.POST)// Metodo para unirse a un juego creado
     public ResponseEntity<Map> joinGame (@PathVariable long gameId , Authentication authentication){
@@ -63,71 +124,29 @@ public class AppControllers {
     }
 
     //----------------------------------------------------------------------------------------------------------
-    @RequestMapping("/game_view/{gpid}")
-    public ResponseEntity<Map<String,Object>> getGames_view(@PathVariable Long gpid , Authentication authentication){
-
-        Map<String, Object> error = new LinkedHashMap<>();
-
-        if (isGuest(authentication)){
-            error.put("error", "Necesita Loguearse");
-            return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
-        }
-        // Jugador autenticado, obtenemos el nombre por playerRepository
-        Player playerLogued = playerRepository.findByEmail(authentication.getName());
-        // Asigno al gameplayer(partida actual) en la variable gpid
-        GamePlayer gamePlayer = gamePlayerRepository.findById(gpid).orElse(null);
-        //obtengo el game
-        Game game = gamePlayer.getGame();
-
-        if (playerLogued == authentication){
-            error.put("error", "Rejected request - Solicitud rechazada");
-            return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);}
-
-        if (gamePlayer == authentication){
-            error.put("error", "Rejected request - Solicitud rechazada");
-            return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);}
-
-        if (gamePlayer.getPlayer().getId() != playerLogued.getId()){
-            error.put("error", "Check your steps again - Revise sus pasos nuevamente");
-            return new ResponseEntity<>(error, HttpStatus.CONFLICT);}
-
-        Map<String, Object> dto = new LinkedHashMap<>();
-        Map<String, Object> hits = new LinkedHashMap<>();
-
-        hits.put("self" , this.getHits(gamePlayer , gamePlayer.getOpponent()));
-        hits.put("opponent" , this.getHits(gamePlayer.getOpponent() , gamePlayer));
-
-        dto.put("id", game.getId());
-        dto.put("created", game.getCreationDate());
-        dto.put("gameState" , getState(gamePlayer, gamePlayer.getOpponent()));
-        dto.put("hits" , hits);
-        dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers()
-                .stream()
-                .map(_gamePlayer -> _gamePlayer.makeGamePlayerDTO()));
-
-        dto.put("ships", gamePlayer.getShips()
-                .stream()
-                .map(ship -> ship.makeShipDTO())
-                .collect(Collectors.toList()));
-        dto.put("salvoes" , gamePlayer.getGame().getGamePlayers()
-                .stream()
-                .flatMap(_gamePlayer -> _gamePlayer.getSalvoes() .stream())
-                .map(salvo -> salvo.makeSalvoDTO())
-                .collect(Collectors.toList()));
-
-        return (new ResponseEntity<>(dto, HttpStatus.OK));
-    }
-
-    //----------------------------------------------------------------------------------------------------------
 
     private boolean isGuest(Authentication authentication) { // Mètodo para autenticar a un visitante
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
     }
 
-    private List<Map<String,Object>> getHits (GamePlayer gamePlayerSelf , GamePlayer gamePlayerOpponent){
+
+    private List<Object> getHits (GamePlayer gamePlayer){
+
+        GamePlayer gpOpponent = gamePlayer.getOpponent();
+
         //hacer dto para hits , con las locations de los salvos
-        List<Map<String,Object>> hits = new ArrayList<>();
-        return hits;
+        List<Object> dtoHits = new ArrayList<>();
+
+        // Ordena los salvos segun el turno
+        List<Salvo> salvosInOrder = gpOpponent.getSalvoes()
+                .stream()
+                .sorted(Comparator.comparingInt(Salvo::getTurn))
+                .collect(Collectors.toList());
+
+        // Aplico hitsDTO a los salvos y los guardo en dtoHits
+        salvosInOrder.forEach(salvo -> dtoHits.add(salvo.hitsDTO()));
+
+        return dtoHits;
     }
 
 
@@ -139,22 +158,23 @@ public class AppControllers {
 
 
     public String getState (GamePlayer gamePlayerSelf , GamePlayer gamePlayerOpponent){
+
      if( gamePlayerSelf.getShips().isEmpty()){
      return "PLACESHIPS";
      }
+
      if(gamePlayerSelf.getGame().getGamePlayers().size() == 1){
      return "WAITINGFOROPP";
      }
 
-     if(gamePlayerSelf.getId() < gamePlayerOpponent.getId()){
-     return "PLAY";
+     if(gamePlayerSelf.getSalvoes().size() < gamePlayerOpponent.getSalvoes().size())
+         return "PLAY";
+
+     if(gamePlayerSelf.getSalvoes().size() == gamePlayerOpponent.getSalvoes().size()){
+         if (gamePlayerSelf.getId() < gamePlayerOpponent.getId())
+             return "PLAY";
      }
-
-     if(gamePlayerSelf.getId() > gamePlayerOpponent.getId()){
-      return "WAIT";
-      }
-
-      return "LOST";
+     return "WAIT";
     }
 
 }

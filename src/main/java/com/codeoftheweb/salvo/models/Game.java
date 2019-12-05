@@ -40,14 +40,14 @@ public class Game {
     public List<Map<String,Object>> getGamePlayersList(){
         return this.getGamePlayers()
                 .stream()
-                .map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
+                .map(GamePlayer::makeGamePlayerDTO)
                 .collect(Collectors.toList());
     }
 
     public List<Map<String, Object>> getScoresList(){
         return this.getScores()
                 .stream()
-                .map(score -> score.makeScoreDTO())
+                .map(Score::makeScoreDTO)
                 .collect(Collectors.toList());
 
     }

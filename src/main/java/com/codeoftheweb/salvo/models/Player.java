@@ -33,11 +33,10 @@ public class Player {
     }
 
     public Score getScore(long gameId) {
-        Score score = scores.stream()
+        return scores.stream()
                 .filter(_score -> _score.getGame().getId() == gameId)
                 .findFirst()
                 .orElse(null);
-        return score;
     }
 
     public Player(){};

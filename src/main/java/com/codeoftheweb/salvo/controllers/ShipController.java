@@ -60,6 +60,8 @@ public class ShipController {
         if (!gamePlayer.getShips().isEmpty()) {
             return new ResponseEntity<>(makeMap("error" , "You already have your ships locations - Sus barcos ya tienen ubicaciones asignadas") , HttpStatus.FORBIDDEN);}
 
+
+
         // Recorre una set de barcos y se lo asigna al parametro creado en este mètodo
         ships.forEach(ship -> {
             ship.setGamePlayer(gamePlayer);});

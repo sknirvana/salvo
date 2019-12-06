@@ -73,9 +73,11 @@ public class AppControllers {
             hits.put("opponent" , this.getHits(gamePlayer.getOpponent()));
         }
 
+
+
         dto.put("id", game.getId());
         dto.put("created", game.getCreationDate());
-        dto.put("gameState" , getState(gamePlayer, gamePlayer.getOpponent()));
+        dto.put("gameState" , Util.getState(gamePlayer, gamePlayer.getOpponent()));
         dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers()
                 .stream()
                 .map(GamePlayer::makeGamePlayerDTO)); // .map(_gamePlayer -> _gamePlayer.makeGamePlayerDTO()) esto es lo mismo
@@ -157,24 +159,6 @@ public class AppControllers {
     }
 
 
-    public String getState (GamePlayer gamePlayerSelf , GamePlayer gamePlayerOpponent){
 
-     if( gamePlayerSelf.getShips().isEmpty()){
-     return "PLACESHIPS";
-     }
-
-     if(gamePlayerSelf.getGame().getGamePlayers().size() == 1){
-     return "WAITINGFOROPP";
-     }
-
-     if(gamePlayerSelf.getSalvoes().size() < gamePlayerOpponent.getSalvoes().size())
-         return "PLAY";
-
-     if(gamePlayerSelf.getSalvoes().size() == gamePlayerOpponent.getSalvoes().size()){
-         if (gamePlayerSelf.getId() < gamePlayerOpponent.getId())
-             return "PLAY";
-     }
-     return "WAIT";
-    }
 
 }

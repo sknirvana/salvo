@@ -65,25 +65,27 @@ public class Salvo {
                 hitLocations.add(salvoLocations.get(i));} */
 
 
-        //  3 Otra forma de hacerlo es: ->>
+        dto.put("turn", turn);
+        //---Añadir hitLocations al dto
+        dto.put("hitLocations", getHitLocations(shipLocations));
+        dto.put("damages", getDamage());
+        dto.put("missed", salvoLocations.size() - getHitLocations(shipLocations).size());
+
+        return dto;
+    }
+
+    public List<String> getHitLocations(List<String> shipLocations) {
         List<String> hitLocations = new ArrayList<>();
         for (String s : salvoLocations) {
             if (shipLocations.contains(s))
                 hitLocations.add(s);
         }
-
-        dto.put("turn", turn);
-        //---Añadir hitLocations al dto
-        dto.put("hitLocations", hitLocations);
-        dto.put("damages", getDamage());
-        dto.put("missed", salvoLocations.size() - hitLocations.size());
-
-        return dto;
+        return hitLocations;
     }
 
-    public Map<String, Object> getDamage() {
+    public Map<String, Integer> getDamage() {   // si rompe fue aca
 
-        Map<String, Object> hitsPerTurn = new LinkedHashMap<>();
+        Map<String, Integer> hitsPerTurn = new LinkedHashMap<>();
 
         hitsPerTurn.put("carrierHits", hitPerShip("carrier", salvoLocations));
         hitsPerTurn.put("destroyerHits", hitPerShip("destroyer", salvoLocations));
@@ -101,6 +103,7 @@ public class Salvo {
         return hitsPerTurn;
     }
 
+
     // Aca quiero la cantidad de veces que le pegaron a un ship con este salvo (por que estoy en salvo)
     public int hitPerShip(String type, List<String> salvoLocations1) {
 
@@ -116,6 +119,7 @@ public class Salvo {
 
         return hits;
     }
+
 
     //Aca lo que quiero es saber la cantidad de veces que fue golpeado mi ship hasta el turno dado
     public int hitAcumulatedPerShip(String type) {

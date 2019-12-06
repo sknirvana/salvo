@@ -77,6 +77,8 @@ public class GamePlayer {
         return ships.stream().filter(ship -> ship.getType().equals(type)).findFirst().get();
     }
 
+    public void addSalvo(Salvo salvo){this.salvoes.add(salvo);}
+
     public long getId() {
         return id;
     }
